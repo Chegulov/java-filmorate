@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -52,7 +51,7 @@ public class UserController {
     }
 
     private void validate(User user) {
-        String msg = "";
+        String msg;
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             msg = "Почта не может быть пустой";
             log.error(msg);

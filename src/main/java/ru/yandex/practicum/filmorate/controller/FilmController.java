@@ -51,7 +51,7 @@ public class FilmController {
     }
 
     private void validate(Film film) {
-        String msg = "";
+        String msg;
         if (film.getName() == null || film.getName().isBlank()) {
             msg = "Имя фильма не может быть пустым.";
             log.error(msg);
