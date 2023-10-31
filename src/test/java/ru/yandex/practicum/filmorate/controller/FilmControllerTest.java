@@ -17,6 +17,7 @@ public class FilmControllerTest {
     public void init() {
         filmController = new FilmController();
     }
+
     @Test
     void shouldThrowExceptionIfEmptyName() {
         Film film = Film.builder()
