@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -36,15 +38,16 @@ public class FilmController {
     }
 
     @PutMapping("/films")
-    public Film update(@RequestBody Film film) {
+    public ResponseEntity<Film> update(@RequestBody Film film) {
         validate(film);
         if (films.containsKey(film.getId())) {
             log.info("фильм с id={} обновлён", film.getId());
             films.put(film.getId(), film);
+            return new ResponseEntity<>(film, HttpStatus.OK);
         } else {
-            create(film);
+            log.info("фильм с id={} не найден", film.getId());
+            return new ResponseEntity<>(film, HttpStatus.NOT_FOUND);
         }
-        return film;
     }
 
     private void validate(Film film) {
