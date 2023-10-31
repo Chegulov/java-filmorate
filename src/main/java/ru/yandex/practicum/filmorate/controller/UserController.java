@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 public class UserController {
-    private final static Logger log = LoggerFactory.getLogger(UserController.class);
+    private final Logger log = LoggerFactory.getLogger(UserController.class);
     private final Map<Integer, User> users = new HashMap<>();
     private int idCount = 0;
 
