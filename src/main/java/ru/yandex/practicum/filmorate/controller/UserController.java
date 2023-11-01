@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -37,16 +37,16 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public ResponseEntity<User> update(@RequestBody User user) {
+    public User update(@RequestBody User user) {
         validate(user);
         if (users.containsKey(user.getId())) {
             log.info("Пользователь с id={} обновлён", user.getId());
             users.put(user.getId(), user);
-            return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
             log.info("Пользователь с id={} не найден", user.getId());
-            return new ResponseEntity<>(user, HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+        return user;
     }
 
     private void validate(User user) {
