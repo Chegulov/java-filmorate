@@ -61,7 +61,7 @@ public class UserService {
 
     public List<User> getCommonFriends(int id, int otherId) {
         Set<Integer> friends = new HashSet<>(userStorage.getUserById(id).getFriends());
-        Set<Integer> otherFriends =new HashSet<>(userStorage.getUserById(otherId).getFriends());
+        Set<Integer> otherFriends = new HashSet<>(userStorage.getUserById(otherId).getFriends());
 
         friends.retainAll(otherFriends);
         return friends.stream()
