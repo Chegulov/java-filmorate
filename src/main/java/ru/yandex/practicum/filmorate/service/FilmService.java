@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -40,7 +40,7 @@ public class FilmService {
         if (!filmStorage.getFilmById(id).getLikes().contains(userId)) {
             String msg = String.format("У фильма с id=%d нет лайка от пользователя с id=%d", id, userId);
             log.info(msg);
-            throw new NotFoundException(msg);
+            throw new DataNotFoundException(msg);
         }
         filmStorage.getFilmById(id).getLikes().remove(userId);
 

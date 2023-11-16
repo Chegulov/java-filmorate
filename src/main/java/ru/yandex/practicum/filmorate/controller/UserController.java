@@ -12,6 +12,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -21,12 +22,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getUsers() {
         return userService.getUserStorage().getUsers();
     }
 
-    @PostMapping(value = "/users")
+    @PostMapping
     public User create(@RequestBody User user) {
         validate(user);
         userService.getUserStorage().create(user);
@@ -35,7 +36,7 @@ public class UserController {
         return user;
     }
 
-    @PutMapping("/users")
+    @PutMapping
     public User update(@RequestBody User user) {
         validate(user);
         userService.getUserStorage().update(user);
@@ -43,27 +44,27 @@ public class UserController {
         return user;
     }
 
-    @PutMapping("/users/{id}/friends/{friendId}")
+    @PutMapping("/{id}/friends/{friendId}")
     public User addFriend(@PathVariable int id, @PathVariable int friendId) {
         return userService.addFriend(id, friendId);
     }
 
-    @DeleteMapping("/users/{id}/friends/{friendId}")
+    @DeleteMapping("/{id}/friends/{friendId}")
     public User deleteFriend(@PathVariable int id, @PathVariable int friendId) {
         return userService.deleteFriend(id, friendId);
     }
 
-    @GetMapping("/users/{id}/friends")
+    @GetMapping("/{id}/friends")
     public List<User> getFriendsList(@PathVariable int id) {
         return userService.getFriendsList(id);
     }
 
-    @GetMapping("/users/{id}/friends/common/{otherId}")
+    @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
         return userService.getCommonFriends(id, otherId);
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
         return userService.getUserStorage().getUserById(id);
     }

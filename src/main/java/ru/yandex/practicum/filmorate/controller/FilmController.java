@@ -12,6 +12,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
 
@@ -19,12 +20,12 @@ public class FilmController {
         this.filmService = filmService;
     }
 
-    @GetMapping("/films")
+    @GetMapping
     public List<Film> getFilms() {
         return filmService.getFilmStorage().getFilms();
     }
 
-    @PostMapping(value = "/films")
+    @PostMapping
     public Film create(@RequestBody Film film) {
         validate(film);
         filmService.getFilmStorage().create(film);
@@ -33,7 +34,7 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping("/films")
+    @PutMapping
     public Film update(@RequestBody Film film) {
         validate(film);
         filmService.getFilmStorage().update(film);
@@ -41,22 +42,22 @@ public class FilmController {
         return film;
     }
 
-    @GetMapping("/films/{id}")
+    @GetMapping("/{id}")
     public Film getFilmById(@PathVariable int id) {
         return filmService.getFilmStorage().getFilmById(id);
     }
 
-    @PutMapping("/films/{id}/like/{userId}")
+    @PutMapping("/{id}/like/{userId}")
     public Film addLike(@PathVariable int id, @PathVariable int userId) {
         return filmService.addLike(id, userId);
     }
 
-    @DeleteMapping("/films/{id}/like/{userId}")
+    @DeleteMapping("/{id}/like/{userId}")
     public Film removeLike(@PathVariable int id, @PathVariable int userId) {
         return filmService.removeLike(id, userId);
     }
 
-    @GetMapping("/films/popular")
+    @GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
         return filmService.getPopularFilms(count);
     }

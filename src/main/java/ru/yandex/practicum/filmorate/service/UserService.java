@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -44,7 +44,7 @@ public class UserService {
         if (!user1.getFriends().contains(friendId)) {
             String msg = String.format("Пользователя с id=%d нет в списке друзей у пользователя с id=%d", friendId, id);
             log.info(msg);
-            throw new NotFoundException(msg);
+            throw new DataNotFoundException(msg);
         }
 
         user1.getFriends().remove(friendId);
