@@ -1,6 +1,7 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@Qualifier("inMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>();
     private int idCount = 0;
@@ -55,5 +57,15 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
 
         return film;
+    }
+
+    @Override
+    public void addLike(int userId, int filmId) {
+
+    }
+
+    @Override
+    public void removeLike(int userId, int filmId) {
+
     }
 }
