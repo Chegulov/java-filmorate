@@ -23,7 +23,7 @@ import java.util.TreeSet;
 @Slf4j
 @Component
 @Qualifier("filmDbStorage")
-public class FilmDbStorage implements FilmStorage{
+public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
