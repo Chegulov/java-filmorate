@@ -69,7 +69,7 @@ public class UserDbStorage implements UserStorage {
         String sqlQ = "DELETE FROM relationship WHERE user_id=?";
         jdbcTemplate.update(sqlQ, user.getId());
 
-        if (user.getFriends() != null && user.getFriends().size() !=0) {
+        if (user.getFriends() != null && user.getFriends().size() != 0) {
             String sqlQ2 = "INSERT INTO relationship (user_id, friend_id) VALUES (?, ?)";
             user.getFriends().forEach(id -> jdbcTemplate.update(sqlQ2, user.getId(), id));
         }
