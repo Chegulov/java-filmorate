@@ -36,11 +36,6 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        if (dbContainsUser(user.getId())) {
-            String msg = String.format("Пользователь с id=%d не найден", user.getId());
-            log.info(msg);
-            throw new DataNotFoundException(msg);
-        }
         int userId = addUserToDb(user);
         user.setId(userId);
         String sqlQuery = "INSERT into relationship (user_id, friend_id) VALUES (?, ?)";
@@ -62,18 +57,14 @@ public class UserDbStorage implements UserStorage {
 
         String sqlQuery = "UPDATE users SET " +
                 "user_id=?, email=?, login=?, name=?, birthday=?";
-        if (jdbcTemplate.update(
+        jdbcTemplate.update(
                 sqlQuery,
                 user.getId(),
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
-                user.getBirthday()) == 0
-        ) {
-            String msg = String.format("Пользователь с id=%d не найден", user.getId());
-            log.info(msg);
-            throw new DataNotFoundException(msg);
-        }
+                user.getBirthday());
+
 
         String sqlQ = "DELETE FROM relationship WHERE user_id=?";
         jdbcTemplate.update(sqlQ, user.getId());
