@@ -24,7 +24,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFOR
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 class UserDbStorageTest {
     private final JdbcTemplate jdbcTemplate;
-    private UserDbStorage userStorage;
+    private UserStorage userStorage;
     private User user;
     private User user2;
 

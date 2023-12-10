@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,8 +28,8 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFOR
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 class FilmDbStorageTest {
     private final JdbcTemplate jdbcTemplate;
-    private UserDbStorage userStorage;
-    private FilmDbStorage filmStorage;
+    private UserStorage userStorage;
+    private FilmStorage filmStorage;
     private Film film;
     private Film film2;
     private User user;
