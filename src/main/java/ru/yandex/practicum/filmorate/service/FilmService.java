@@ -2,11 +2,12 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +19,8 @@ public class FilmService {
     private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                       @Qualifier("userDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -29,7 +31,7 @@ public class FilmService {
 
     public Film addLike(int id, int userId) {
         userStorage.getUserById(userId);
-        filmStorage.getFilmById(id).getLikes().add(userId);
+        filmStorage.addLike(userId, id);
 
         return filmStorage.getFilmById(id);
     }
@@ -42,7 +44,7 @@ public class FilmService {
             log.info(msg);
             throw new DataNotFoundException(msg);
         }
-        filmStorage.getFilmById(id).getLikes().remove(userId);
+        filmStorage.removeLike(userId, id);
 
         return filmStorage.getFilmById(id);
     }
