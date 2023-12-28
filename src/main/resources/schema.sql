@@ -18,8 +18,10 @@ CREATE TABLE IF NOT EXISTS relationship (
 	user_id int NOT NULL,
 	friend_id int NOT NULL,
 	CONSTRAINT pk_friends PRIMARY KEY (user_id, friend_id),
-	CONSTRAINT fk_friends1 FOREIGN KEY (user_id) REFERENCES users(user_id),
+	CONSTRAINT fk_friends1 FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON DELETE CASCADE,
 	CONSTRAINT fk_friends2 FOREIGN KEY (friend_id) REFERENCES users(user_id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS mpa
@@ -43,6 +45,7 @@ CREATE TABLE IF NOT EXISTS likes
 	film_id int REFERENCES films(film_id) ON DELETE CASCADE,
 	user_id int REFERENCES users(user_id) ON DELETE CASCADE,
 	PRIMARY KEY (user_id, film_id)
+
 );
 
 CREATE TABLE IF NOT EXISTS genre

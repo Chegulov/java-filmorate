@@ -124,6 +124,17 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public void deleteFilmById(int filmId) {
+      if (!dbContainsFilm(filmId))      {
+          throw new DataNotFoundException(String.format("Фильм с id = %d не найден", filmId));
+      }  else {
+          jdbcTemplate.update("DELETE  FROM FILMS WHERE FILM_ID = ?", filmId);
+          log.info("Фильм с id {} удален", filmId);
+      }
+
+    }
+
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         Film film = Film.builder()
                 .id(rs.getInt("film_id"))

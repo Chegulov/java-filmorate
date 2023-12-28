@@ -62,6 +62,11 @@ public class FilmController {
         return filmService.getPopularFilms(count);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteFilmById(@PathVariable int id) {
+        filmService.getFilmStorage().deleteFilmById(id);
+    }
+
     private void validate(Film film) {
         String msg;
         if (film.getName() == null || film.getName().isBlank()) {
