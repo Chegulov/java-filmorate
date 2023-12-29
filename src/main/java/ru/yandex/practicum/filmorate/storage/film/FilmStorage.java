@@ -18,4 +18,8 @@ public interface FilmStorage {
     void removeLike(int userId, int filmId);
 
     void deleteFilmById(int id);
+
+    List<Film> searchFilm(String query);
+
+    List<Film> getFilmByDirectorSortByLikes(int directorId, String sort);
 }

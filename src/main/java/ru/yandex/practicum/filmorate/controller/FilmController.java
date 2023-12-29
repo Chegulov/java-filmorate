@@ -61,10 +61,24 @@ public class FilmController {
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
         return filmService.getPopularFilms(count);
     }
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmByDirectorSortByLikes(@PathVariable int directorId,
+                                                   @RequestParam(value = "sort", defaultValue = "likes") String sort){
+        if(!(sort.equals("year") || sort.equals("likes"))){
+            throw new IllegalArgumentException();
+        }
+            return filmService.getFilmStorage().getFilmByDirectorSortByLikes(directorId, sort);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteFilmById(@PathVariable int id) {
         filmService.getFilmStorage().deleteFilmById(id);
     }
+
+   /* @GetMapping("/{search}")
+    public List<Film> searchFimByQuery(String query){
+        return filmService.getFilmStorage().searchFilm(query);
+    }*/
 
     private void validate(Film film) {
         String msg;
