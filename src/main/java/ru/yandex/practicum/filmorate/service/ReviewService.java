@@ -24,6 +24,7 @@ public class ReviewService {
         this.userStorage = userStorage;
         this.reviewStorage = reviewStorage;
     }
+
     public ReviewStorage getReviewStorage() {
         return reviewStorage;
     }
