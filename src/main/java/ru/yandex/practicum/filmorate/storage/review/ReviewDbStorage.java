@@ -59,7 +59,7 @@ public class ReviewDbStorage implements ReviewStorage {
         String sqlQ = "DELETE FROM reviews_likes WHERE review_id=?";
         jdbcTemplate.update(sqlQ, review.getReviewId());
 
-        if (review.getReviewsLikes() != null && review.getReviewsLikes().size() !=0) {
+        if (review.getReviewsLikes() != null && review.getReviewsLikes().size() != 0) {
             String sqlQ2 = "INSERT INTO reviews_likes (review_id, user_id, is_positive) VALUES (?, ?, ?)";
             for (Map.Entry<Integer, Boolean> pair : review.getReviewsLikes().entrySet()) {
                 jdbcTemplate.update(sqlQ2, review.getReviewId(), pair.getKey(), pair.getValue());
