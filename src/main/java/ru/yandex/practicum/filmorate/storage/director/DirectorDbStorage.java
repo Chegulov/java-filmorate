@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Slf4j
-@Component()
+@Component
 public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
 

@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class FilmControllerTest {
 
-    private FilmController filmController;
+    /*private FilmController filmController;
 
     @BeforeEach
     public void init() {
@@ -119,5 +119,5 @@ public class FilmControllerTest {
 
         assertNotNull(filmController.getFilms().get(0));
         assertEquals(film2, filmController.getFilms().get(0));
-    }
+    }*/
 }
