@@ -170,6 +170,7 @@ public class FilmDbStorage implements FilmStorage {
             return true;
         }
     }
+
     private Set<Genre> findGenreById(int id) {
         String sqlQuery = "SELECT g.genre_id, g.genre_name FROM film_genre AS fg " +
                 "JOIN genre AS g ON fg.genre_id=g.genre_id WHERE fg.film_id=?";
