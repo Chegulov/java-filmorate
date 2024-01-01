@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
@@ -16,9 +17,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -94,7 +93,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void addLike(int userId, int filmId) {
-        if (!dbContainsFilm(filmId)) {
+        if (dbContainsFilm(filmId)) {
             String msg = String.format("Фильм с id=%d не найден", filmId);
             log.info(msg);
             throw new DataNotFoundException(msg);
@@ -111,7 +110,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void removeLike(int userId, int filmId) {
-        if (!dbContainsFilm(filmId)) {
+        if (dbContainsFilm(filmId)) {
             String msg = String.format("Фильм с id=%d не найден", filmId);
             log.info(msg);
             throw new DataNotFoundException(msg);
@@ -126,12 +125,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void deleteFilmById(int filmId) {
-      if (!dbContainsFilm(filmId))      {
-          throw new DataNotFoundException(String.format("Фильм с id = %d не найден", filmId));
-      }  else {
-          jdbcTemplate.update("DELETE  FROM FILMS WHERE FILM_ID = ?", filmId);
-          log.info("Фильм с id {} удален", filmId);
-      }
+        if (dbContainsFilm(filmId)) {
+            throw new DataNotFoundException(String.format("Фильм с id = %d не найден", filmId));
+        } else {
+            jdbcTemplate.update("DELETE  FROM FILMS WHERE FILM_ID = ?", filmId);
+            log.info("Фильм с id {} удален", filmId);
+        }
 
     }
 
@@ -147,9 +146,9 @@ public class FilmDbStorage implements FilmStorage {
 
         String sqlQuery = "SELECT user_id FROM likes WHERE film_id=?";
         film.getLikes().addAll(jdbcTemplate.query(
-                sqlQuery,
-                (rs1, rowNum1) -> rs1.getInt("user_id"),
-                film.getId()
+                        sqlQuery,
+                        (rs1, rowNum1) -> rs1.getInt("user_id"),
+                        film.getId()
                 )
         );
         film.getGenres().addAll(findGenreById(film.getId()));
@@ -167,12 +166,11 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "SELECT f.*, mpa.mpa_name FROM films AS f JOIN mpa ON f.mpa_id=mpa.mpa_id WHERE f.film_id=?";
         try {
             jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, filmId);
-            return true;
-        } catch (EmptyResultDataAccessException e) {
             return false;
+        } catch (EmptyResultDataAccessException e) {
+            return true;
         }
     }
-
     private Set<Genre> findGenreById(int id) {
         String sqlQuery = "SELECT g.genre_id, g.genre_name FROM film_genre AS fg " +
                 "JOIN genre AS g ON fg.genre_id=g.genre_id WHERE fg.film_id=?";
