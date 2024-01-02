@@ -12,7 +12,9 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -97,22 +99,24 @@ public class FilmService {
         List<Film> filmList = filmStorage.getFilms();
         List<Film> searchedFilms = new ArrayList<>();
         for (Film film : filmList) {
-            for (String directorName : film.getDirectorsName()) {
-                if (by.size() == 2 param.contains("title") && param.contains("director")) {
-                    if (film.getName().contains(query) || directorName.contains(query)) {
+            if (by.contains("title") && by.contains("director")) {
+                if (film.getName().contains(query) && !searchedFilms.contains(film)) {
+                    searchedFilms.add(film);
+                }
+                for (String directorName : film.getDirectorsName()) {
+                    if (directorName.contains(query) && !searchedFilms.contains(film)) {
                         searchedFilms.add(film);
                     }
-                } else
-                    for (String s : by) {
-                    if (param.contains("title") && param.length() == 5) {
-                        if (film.getName().contains(query)) {
-                            searchedFilms.add(film);
-                        }
-                    } else if (param.contains("director") && param.length() == 8) {
-                        if (directorName.contains(query)) {
-                            searchedFilms.add(film);
-                        }
+                }
+            }  else if (by.contains("director")) {
+                for (String directorName : film.getDirectorsName()) {
+                    if (directorName.contains(query) && !searchedFilms.contains(film)) {
+                        searchedFilms.add(film);
                     }
+                }
+            } else if (by.contains("title")) {
+                if (film.getName().contains(query) && !searchedFilms.contains(film)) {
+                    searchedFilms.add(film);
                 }
             }
         }

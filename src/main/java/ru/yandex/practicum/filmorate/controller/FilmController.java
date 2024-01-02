@@ -74,8 +74,7 @@ public class FilmController {
 
     @GetMapping("/search")
     public List<Film> searchFilms(@RequestParam String query,
-                                  @RequestParam(defaultValue = "title") Optional<List<String>> by
-    ) {
+                                  @RequestParam Optional<List<String>> by) {
         log.info("Request received: GET /films/search");
         List<Film> searchedFilms = filmService.getSearcherFilms(query, by.get());
         log.info("Request GET /films/search processed: searchedFilms: {}", searchedFilms);
