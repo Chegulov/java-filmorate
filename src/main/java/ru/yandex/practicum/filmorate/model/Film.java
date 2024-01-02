@@ -4,11 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.TreeSet;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -31,5 +28,9 @@ public class Film {
         filmMap.put("duration", duration);
         filmMap.put("mpa_id", mpa.getId());
         return filmMap;
+    }
+
+    public List<String> getDirectorsName() {
+        return directors.stream().map(Director::getName).collect(Collectors.toList());
     }
 }

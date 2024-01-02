@@ -92,4 +92,37 @@ public class FilmService {
                 .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
                 .collect(Collectors.toList());
     }
+
+    public List<Film> getSearcherFilms(String query, List<String> by) {
+        List<Film> filmList = filmStorage.getFilms();
+        List<Film> searchedFilms = new ArrayList<>();
+        for (Film film : filmList) {
+            for (String directorName : film.getDirectorsName()) {
+                if (by.size() == 2 param.contains("title") && param.contains("director")) {
+                    if (film.getName().contains(query) || directorName.contains(query)) {
+                        searchedFilms.add(film);
+                    }
+                } else
+                    for (String s : by) {
+                    if (param.contains("title") && param.length() == 5) {
+                        if (film.getName().contains(query)) {
+                            searchedFilms.add(film);
+                        }
+                    } else if (param.contains("director") && param.length() == 8) {
+                        if (directorName.contains(query)) {
+                            searchedFilms.add(film);
+                        }
+                    }
+                }
+            }
+        }
+        if (searchedFilms.isEmpty()) {
+            return filmList.stream()
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .collect(Collectors.toList());
+        }
+        return searchedFilms.stream()
+                .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                .collect(Collectors.toList());
+    }
 }
