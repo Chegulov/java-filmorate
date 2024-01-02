@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Director implements Comparable<Director>{
+public class Director implements Comparable<Director> {
     private Long id;
     private String  name;
 
