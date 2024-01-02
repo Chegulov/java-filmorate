@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-    private final DirectorDbStorage directorStorage;
+    private final DirectorStorage directorStorage;
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
