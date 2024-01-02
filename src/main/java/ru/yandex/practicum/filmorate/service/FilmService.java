@@ -62,6 +62,23 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public List<Film> commonFilms(int userId, int friendId) {
+        List<Film> resultCommon = new ArrayList<>();
+        filmStorage.getFilms().forEach(film -> {
+
+                    if (filmStorage.getFilmById(film.getId()).getLikes().contains(userId)
+                            && filmStorage.getFilmById(film.getId()).getLikes().contains(friendId))
+                        resultCommon.add(film);
+
+                    else {
+                        log.info("Нет общих фильмов");
+                    }
+                }
+        );
+
+        return resultCommon;
+    }
+
     public List<Film> getSortedFilmByDirector(int directorId, String sort) {
         Director director = directorStorage.getDirectorById(directorId);
         if (sort.equals("year")) {

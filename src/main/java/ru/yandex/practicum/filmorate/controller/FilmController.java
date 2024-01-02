@@ -76,6 +76,11 @@ public class FilmController {
         filmService.getFilmStorage().deleteFilmById(id);
     }
 
+    @GetMapping("/common")
+    public List<Film> getFilmByCommonUserAndFriend(@RequestParam int userId, @RequestParam int friendId) {
+        return filmService.commonFilms(userId, friendId);
+
+    }
    /* @GetMapping("/{search}")
     public List<Film> searchFimByQuery(String query){
         return filmService.getFilmStorage().searchFilm(query);
