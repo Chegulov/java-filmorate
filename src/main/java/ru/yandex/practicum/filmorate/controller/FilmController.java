@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import java.time.LocalDate;
 import java.util.List;
 
-
 @Slf4j
 @RestController
 @RequestMapping("/films")
@@ -65,6 +64,12 @@ public class FilmController {
     @DeleteMapping("/{id}")
     public void deleteFilmById(@PathVariable int id) {
         filmService.getFilmStorage().deleteFilmById(id);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getFilmByCommonUserAndFriend(@RequestParam int userId, @RequestParam int friendId) {
+        return filmService.commonFilms(userId, friendId);
+
     }
 
     private void validate(Film film) {

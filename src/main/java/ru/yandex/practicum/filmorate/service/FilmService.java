@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,5 +55,22 @@ public class FilmService {
                 .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
                 .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    public List<Film> commonFilms(int userId, int friendId) {
+        List<Film> resultCommon = new ArrayList<>();
+        filmStorage.getFilms().forEach(film -> {
+
+                    if (filmStorage.getFilmById(film.getId()).getLikes().contains(userId)
+                            && filmStorage.getFilmById(film.getId()).getLikes().contains(friendId))
+                        resultCommon.add(film);
+
+                    else {
+                        log.info("Нет общих фильмов");
+                    }
+                }
+        );
+
+        return resultCommon;
     }
 }
