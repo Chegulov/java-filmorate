@@ -2,13 +2,13 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -19,41 +19,40 @@ public class DirectorController {
     private final DirectorService directorService;
 
     @GetMapping
-    public Collection<Director> getDirectors() {
-        return directorService.getDirectorDbStorage().getDirectors();
+    public List<Director> getDirectors() {
+        return directorService.getDirectors();
     }
 
 
     @PostMapping
-    public ResponseEntity<Director> create(@RequestBody Director director) {
-        try {
-            log.info(" Режиссёр с id={} добавлен", director.getId());
-            return new ResponseEntity<>(directorService.getDirectorDbStorage().create(director), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public Director create(@RequestBody Director director) {
+        return directorService.create(director);
     }
 
     @PutMapping
     public Director update(@RequestBody Director director) {
-        directorService.getDirectorDbStorage().update(director);
+        directorService.update(director);
 
         return director;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Director> getDirectorById(@PathVariable int id) {
-        try {
-            return new ResponseEntity<>(directorService.getDirectorDbStorage().getDirectorById(id), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public Director getDirectorById(@PathVariable int id) {
+        return directorService.getDirectorById(id);
 
     }
 
     @DeleteMapping("/{id}")
     public void deleteDirectorById(@PathVariable int id) {
-        directorService.getDirectorDbStorage().deleteDirectorById(id);
+        directorService.deleteDirectorById(id);
     }
 
+    private void validate(Director director) {
+        String msg;
+        if (director.getName() == null || director.getName().isBlank()) {
+            msg = "Имя режиссера не может быть пустым.";
+            log.error(msg);
+            throw new ValidationException(msg);
+        }
+    }
 }
