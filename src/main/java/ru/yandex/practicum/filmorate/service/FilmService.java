@@ -8,14 +8,12 @@ import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -23,15 +21,18 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-    private final DirectorDbStorage directorStorage;
+    private final DirectorStorage directorStorage;
+    private final GenreStorage genreStorage;
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        @Qualifier("userDbStorage") UserStorage userStorage,
-                       DirectorDbStorage directorStorage) {
+                       DirectorStorage directorStorage,
+                       GenreStorage genreStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
+        this.genreStorage = genreStorage;
     }
 
     public FilmStorage getFilmStorage() {
@@ -58,11 +59,33 @@ public class FilmService {
         return filmStorage.getFilmById(id);
     }
 
-    public List<Film> getPopularFilms(int count) {
-        return filmStorage.getFilms().stream()
-                .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
-                .limit(count)
-                .collect(Collectors.toList());
+    public List<Film> getPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
+        List<Film> films = filmStorage.getFilms();
+        if (genreId.isPresent() && year.isPresent()) {
+            return films.stream()
+                    .filter(f -> f.getGenres().contains(genreStorage.getGenre(genreId.get())))
+                    .filter(f -> f.getReleaseDate().getYear() == year.get())
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .limit(count)
+                    .collect(Collectors.toList());
+        } else if (genreId.isPresent()) {
+            return films.stream()
+                    .filter(f -> f.getGenres().contains(genreStorage.getGenre(genreId.get())))
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .limit(count)
+                    .collect(Collectors.toList());
+        } else if (year.isPresent()) {
+            return films.stream()
+                    .filter(f -> f.getReleaseDate().getYear() == year.get())
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .limit(count)
+                    .collect(Collectors.toList());
+        } else {
+            return films.stream()
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .limit(count)
+                    .collect(Collectors.toList());
+        }
     }
 
     public List<Film> commonFilms(int userId, int friendId) {
