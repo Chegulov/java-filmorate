@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 
 @Slf4j
@@ -62,12 +61,24 @@ public class FilmController {
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
         return filmService.getPopularFilms(count);
     }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmByDirectorSort(@PathVariable int directorId,
+                                            @RequestParam String sortBy) {
+        if (!sortBy.equals("year") && !sortBy.equals("likes")) {
+            throw new IllegalArgumentException();
+        } else {
+            return filmService.getSortedFilmByDirector(directorId, sortBy);
+        }
+    }
+
     @DeleteMapping("/{id}")
     public void deleteFilmById(@PathVariable int id) {
         filmService.getFilmStorage().deleteFilmById(id);
     }
+
     @GetMapping("/common")
-    public List<Film> getFilmByCommonUserAndFriend(@RequestParam int userId, @RequestParam int friendId){
+    public List<Film> getFilmByCommonUserAndFriend(@RequestParam int userId, @RequestParam int friendId) {
         return filmService.commonFilms(userId, friendId);
 
     }

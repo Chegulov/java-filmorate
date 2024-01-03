@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exception.DuplicateDataException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -46,6 +47,12 @@ public class FilmDbStorage implements FilmStorage {
                 jdbcTemplate.update(sqlQuery, filmId, genre.getId());
             }
         }
+        if (!film.getDirectors().isEmpty()) {
+            for (Director director : film.getDirectors()) {
+                jdbcTemplate.update("INSERT into FILM_DIRECTOR (FILM_ID, DIRECTOR_ID) " +
+                        "VALUES (?, ?)", filmId, director.getId());
+            }
+        }
         return film;
     }
 
@@ -70,9 +77,16 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQ = "DELETE FROM film_genre WHERE film_id=?";
         jdbcTemplate.update(sqlQ, film.getId());
 
+        String sqlDirector = "DELETE FROM FILM_DIRECTOR WHERE FILM_ID=?";
+        jdbcTemplate.update(sqlDirector, film.getId());
+
         if (film.getGenres() != null && film.getGenres().size() != 0) {
             String sqlQ2 = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
             film.getGenres().forEach(genre -> jdbcTemplate.update(sqlQ2, film.getId(), genre.getId()));
+        }
+        if (film.getDirectors() != null && film.getDirectors().size() != 0) {
+            String sqlQ3 = "INSERT INTO FILM_DIRECTOR (FILM_ID, DIRECTOR_ID) VALUES (?, ?)";
+            film.getDirectors().forEach(director -> jdbcTemplate.update(sqlQ3, film.getId(), director.getId()));
         }
         return film;
     }
@@ -152,6 +166,7 @@ public class FilmDbStorage implements FilmStorage {
                 )
         );
         film.getGenres().addAll(findGenreById(film.getId()));
+        film.getDirectors().addAll(findDirectorId(film.getId()));
         return film;
     }
 
@@ -181,6 +196,19 @@ public class FilmDbStorage implements FilmStorage {
         return Genre.builder()
                 .id(rs.getInt("genre_id"))
                 .name(rs.getString("genre_name"))
+                .build();
+    }
+
+    private Set<Director> findDirectorId(int id) {
+        return new TreeSet<>(jdbcTemplate.query("SELECT * FROM FILM_DIRECTOR fd " +
+                "JOIN DIRECTORS D on D.DIRECTOR_ID = fd.DIRECTOR_ID " +
+                "WHERE fd.FILM_ID = ?", this::makeDirector, id));
+    }
+
+    private Director makeDirector(ResultSet rs, int rowNum) throws SQLException {
+        return Director.builder()
+                .id(rs.getLong("DIRECTOR_ID"))
+                .name(rs.getString("DIRECTOR_NAME"))
                 .build();
     }
 }
