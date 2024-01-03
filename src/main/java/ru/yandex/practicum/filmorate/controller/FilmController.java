@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -69,6 +70,15 @@ public class FilmController {
         } else {
             return filmService.getSortedFilmByDirector(directorId, sortBy);
         }
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query,
+                                  @RequestParam Optional<List<String>> by) {
+        log.info("Request received: GET /films/search");
+        List<Film> searchedFilms = filmService.getSearcherFilms(query, by.get());
+        log.info("Request GET /films/search processed: searchedFilms: {}", searchedFilms);
+        return searchedFilms;
     }
 
     @DeleteMapping("/{id}")

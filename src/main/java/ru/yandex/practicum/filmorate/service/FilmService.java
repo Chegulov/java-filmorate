@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
@@ -12,7 +13,9 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -89,6 +92,37 @@ public class FilmService {
         }
         return filmStorage.getFilms().stream()
                 .filter(f -> f.getDirectors().contains(director))
+                .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                .collect(Collectors.toList());
+    }
+
+    public List<Film> getSearcherFilms(String query, List<String> by) {
+        List<Film> filmList = filmStorage.getFilms();
+        Set<Film> searchedFilms = new HashSet<>();
+        String lowQuery = query.toLowerCase();
+        for (Film film : filmList) {
+            if (by.contains("title") && by.contains("director")) {
+                if (film.getName().toLowerCase().contains(lowQuery)) {
+                    searchedFilms.add(film);
+                }
+                film.getDirectorsName().stream()
+                        .filter(directorName -> directorName.toLowerCase().contains(lowQuery))
+                        .map(directorName -> film)
+                        .forEachOrdered(searchedFilms::add);
+            } else if (by.contains("director")) {
+                film.getDirectorsName().stream()
+                        .filter(directorName -> directorName.toLowerCase().contains(lowQuery))
+                        .map(directorName -> film)
+                        .forEachOrdered(searchedFilms::add);
+            } else if (by.contains("title")) {
+                if (film.getName().toLowerCase().contains(lowQuery)) {
+                    searchedFilms.add(film);
+                }
+            } else {
+                throw new ValidationException("Передан некорректный запрос");
+            }
+        }
+        return searchedFilms.stream()
                 .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
                 .collect(Collectors.toList());
     }
