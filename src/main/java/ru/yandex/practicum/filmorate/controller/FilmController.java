@@ -67,11 +67,7 @@ public class FilmController {
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmByDirectorSort(@PathVariable int directorId,
                                             @RequestParam String sortBy) {
-        if (!sortBy.equals("year") && !sortBy.equals("likes")) {
-            throw new IllegalArgumentException();
-        } else {
-            return filmService.getSortedFilmByDirector(directorId, sortBy);
-        }
+        return filmService.getSortedFilmByDirector(directorId, sortBy);
     }
 
     @GetMapping("/search")

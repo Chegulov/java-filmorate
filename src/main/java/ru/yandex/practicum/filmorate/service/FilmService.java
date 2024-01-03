@@ -112,11 +112,15 @@ public class FilmService {
                     .filter(f -> f.getDirectors().contains(director))
                     .sorted((o1, o2) -> o1.getReleaseDate().compareTo(o2.getReleaseDate()))
                     .collect(Collectors.toList());
+        } else if (sort.equals("likes")) {
+            return filmStorage.getFilms().stream()
+                    .filter(f -> f.getDirectors().contains(director))
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .collect(Collectors.toList());
+        } else {
+            throw new ValidationException("Заданы неверные параметры запроса");
         }
-        return filmStorage.getFilms().stream()
-                .filter(f -> f.getDirectors().contains(director))
-                .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
-                .collect(Collectors.toList());
+
     }
 
     public List<Film> getSearcherFilms(String query, List<String> by) {
