@@ -59,24 +59,24 @@ public class FilmService {
         return filmStorage.getFilmById(id);
     }
 
-    public List<Film> getPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
+    public List<Film> getPopularFilms(int count, int genreId, int year) {
         List<Film> films = filmStorage.getFilms();
-        if (genreId.isPresent() && year.isPresent()) {
+        if (genreId != 0 && year != 0) {
             return films.stream()
-                    .filter(f -> f.getGenres().contains(genreStorage.getGenre(genreId.get())))
-                    .filter(f -> f.getReleaseDate().getYear() == year.get())
+                    .filter(f -> f.getGenres().contains(genreStorage.getGenre(genreId)))
+                    .filter(f -> f.getReleaseDate().getYear() == year)
                     .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
                     .limit(count)
                     .collect(Collectors.toList());
-        } else if (genreId.isPresent()) {
+        } else if (genreId != 0) {
             return films.stream()
-                    .filter(f -> f.getGenres().contains(genreStorage.getGenre(genreId.get())))
+                    .filter(f -> f.getGenres().contains(genreStorage.getGenre(genreId)))
                     .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
                     .limit(count)
                     .collect(Collectors.toList());
-        } else if (year.isPresent()) {
+        } else if (year != 0) {
             return films.stream()
-                    .filter(f -> f.getReleaseDate().getYear() == year.get())
+                    .filter(f -> f.getReleaseDate().getYear() == year)
                     .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
                     .limit(count)
                     .collect(Collectors.toList());
