@@ -11,31 +11,31 @@ import java.util.List;
 @Service
 public class DirectorService {
 
-    private final DirectorStorage directorDbStorage;
+    private final DirectorStorage directorStorage;
 
     @Autowired
-    public DirectorService(DirectorStorage directorDbStorage) {
-        this.directorDbStorage = directorDbStorage;
+    public DirectorService(DirectorStorage directorStorage) {
+        this.directorStorage = directorStorage;
     }
 
     public List<Director> getDirectors() {
-        return directorDbStorage.getDirectors();
+        return directorStorage.getDirectors();
     }
 
     public Director create(Director director) {
-        return directorDbStorage.create(director);
+        return directorStorage.create(director);
     }
 
     public Director update(Director director) {
-        return directorDbStorage.update(director);
+        return directorStorage.update(director);
     }
 
     public Director getDirectorById(int id) {
-        return directorDbStorage.getDirectorById(id);
+        return directorStorage.getDirectorById(id);
     }
 
     public void deleteDirectorById(int id) {
-        directorDbStorage.deleteDirectorById(id);
+        directorStorage.deleteDirectorById(id);
     }
 
 
