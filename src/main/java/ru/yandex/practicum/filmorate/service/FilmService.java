@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
@@ -24,14 +25,17 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final DirectorStorage directorStorage;
+    private final GenreStorage genreStorage;
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        @Qualifier("userDbStorage") UserStorage userStorage,
-                       DirectorStorage directorStorage) {
+                       DirectorStorage directorStorage,
+                       GenreStorage genreStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
+        this.genreStorage = genreStorage;
     }
 
     public FilmStorage getFilmStorage() {
@@ -58,11 +62,33 @@ public class FilmService {
         return filmStorage.getFilmById(id);
     }
 
-    public List<Film> getPopularFilms(int count) {
-        return filmStorage.getFilms().stream()
-                .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
-                .limit(count)
-                .collect(Collectors.toList());
+    public List<Film> getPopularFilms(int count, int genreId, int year) {
+        List<Film> films = filmStorage.getFilms();
+        if (genreId != 0 && year != 0) {
+            return films.stream()
+                    .filter(f -> f.getGenres().contains(genreStorage.getGenre(genreId)))
+                    .filter(f -> f.getReleaseDate().getYear() == year)
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .limit(count)
+                    .collect(Collectors.toList());
+        } else if (genreId != 0) {
+            return films.stream()
+                    .filter(f -> f.getGenres().contains(genreStorage.getGenre(genreId)))
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .limit(count)
+                    .collect(Collectors.toList());
+        } else if (year != 0) {
+            return films.stream()
+                    .filter(f -> f.getReleaseDate().getYear() == year)
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .limit(count)
+                    .collect(Collectors.toList());
+        } else {
+            return films.stream()
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .limit(count)
+                    .collect(Collectors.toList());
+        }
     }
 
     public List<Film> commonFilms(int userId, int friendId) {
@@ -89,11 +115,15 @@ public class FilmService {
                     .filter(f -> f.getDirectors().contains(director))
                     .sorted((o1, o2) -> o1.getReleaseDate().compareTo(o2.getReleaseDate()))
                     .collect(Collectors.toList());
+        } else if (sort.equals("likes")) {
+            return filmStorage.getFilms().stream()
+                    .filter(f -> f.getDirectors().contains(director))
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .collect(Collectors.toList());
+        } else {
+            throw new ValidationException("Заданы неверные параметры запроса");
         }
-        return filmStorage.getFilms().stream()
-                .filter(f -> f.getDirectors().contains(director))
-                .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
-                .collect(Collectors.toList());
+
     }
 
     public List<Film> getSearcherFilms(String query, List<String> by) {

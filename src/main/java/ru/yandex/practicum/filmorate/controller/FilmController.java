@@ -58,18 +58,16 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        return filmService.getPopularFilms(count);
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count,
+                                      @RequestParam (defaultValue = "0") int genreId,
+                                      @RequestParam (defaultValue = "0") int year) {
+        return filmService.getPopularFilms(count, genreId, year);
     }
 
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmByDirectorSort(@PathVariable int directorId,
                                             @RequestParam String sortBy) {
-        if (!sortBy.equals("year") && !sortBy.equals("likes")) {
-            throw new IllegalArgumentException();
-        } else {
-            return filmService.getSortedFilmByDirector(directorId, sortBy);
-        }
+        return filmService.getSortedFilmByDirector(directorId, sortBy);
     }
 
     @GetMapping("/search")
