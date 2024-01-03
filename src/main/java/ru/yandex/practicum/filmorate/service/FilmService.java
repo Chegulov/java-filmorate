@@ -156,35 +156,4 @@ public class FilmService {
                 .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
                 .collect(Collectors.toList());
     }
-
-    public List<Film> getSearcherFilms(String query, List<String> by) {
-        List<Film> filmList = filmStorage.getFilms();
-        Set<Film> searchedFilms = new HashSet<>();
-        String lowQuery = query.toLowerCase();
-        for (Film film : filmList) {
-            if (by.contains("title") && by.contains("director")) {
-                if (film.getName().toLowerCase().contains(lowQuery)) {
-                    searchedFilms.add(film);
-                }
-                film.getDirectorsName().stream()
-                        .filter(directorName -> directorName.toLowerCase().contains(lowQuery))
-                        .map(directorName -> film)
-                        .forEachOrdered(searchedFilms::add);
-            } else if (by.contains("director")) {
-                film.getDirectorsName().stream()
-                        .filter(directorName -> directorName.toLowerCase().contains(lowQuery))
-                        .map(directorName -> film)
-                        .forEachOrdered(searchedFilms::add);
-            } else if (by.contains("title")) {
-                if (film.getName().toLowerCase().contains(lowQuery)) {
-                    searchedFilms.add(film);
-                }
-            } else {
-                throw new ValidationException("Передан некорректный запрос");
-            }
-        }
-        return searchedFilms.stream()
-                .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
-                .collect(Collectors.toList());
-    }
 }

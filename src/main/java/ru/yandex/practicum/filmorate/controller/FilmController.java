@@ -79,15 +79,6 @@ public class FilmController {
         return searchedFilms;
     }
 
-    @GetMapping("/search")
-    public List<Film> searchFilms(@RequestParam String query,
-                                  @RequestParam Optional<List<String>> by) {
-        log.info("Request received: GET /films/search");
-        List<Film> searchedFilms = filmService.getSearcherFilms(query, by.get());
-        log.info("Request GET /films/search processed: searchedFilms: {}", searchedFilms);
-        return searchedFilms;
-    }
-
     @DeleteMapping("/{id}")
     public void deleteFilmById(@PathVariable int id) {
         filmService.getFilmStorage().deleteFilmById(id);
