@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,16 +26,19 @@ public class FilmService {
     private final UserStorage userStorage;
     private final DirectorStorage directorStorage;
     private final GenreStorage genreStorage;
+    private final FeedService feedService;
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        @Qualifier("userDbStorage") UserStorage userStorage,
                        DirectorStorage directorStorage,
-                       GenreStorage genreStorage) {
+                       GenreStorage genreStorage,
+                       FeedService feedService) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
         this.genreStorage = genreStorage;
+        this.feedService = feedService;
     }
 
     public FilmStorage getFilmStorage() {
@@ -45,6 +48,13 @@ public class FilmService {
     public Film addLike(int id, int userId) {
         userStorage.getUserById(userId);
         filmStorage.addLike(userId, id);
+        feedService.create(Feed.builder()
+                        .eventType(EventType.LIKE)
+                        .operation(Operation.ADD)
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(userId)
+                        .entityId(id)
+                        .build());
 
         return filmStorage.getFilmById(id);
     }
@@ -58,6 +68,13 @@ public class FilmService {
             throw new DataNotFoundException(msg);
         }
         filmStorage.removeLike(userId, id);
+        feedService.create(Feed.builder()
+                .eventType(EventType.LIKE)
+                .operation(Operation.REMOVE)
+                .timestamp(Instant.now().toEpochMilli())
+                .userId(userId)
+                .entityId(id)
+                .build());
 
         return filmStorage.getFilmById(id);
     }
