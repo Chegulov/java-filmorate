@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,10 +12,12 @@ import java.util.Map;
 @Builder
 public class Review {
     private int reviewId;
+    @NotBlank
     private String content;
+    @NotNull
     private Boolean isPositive;
-    private int userId;
-    private int filmId;
+    private Integer userId;
+    private Integer filmId;
     private final Map<Integer, Boolean> reviewsLikes = new HashMap<>();
 
     public Map<String, Object> toMap() {

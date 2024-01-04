@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Operation;
@@ -11,10 +11,12 @@ import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.FeedService;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
+import javax.validation.Valid;
 import java.time.Instant;
 import java.util.List;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/reviews")
 @RequiredArgsConstructor
@@ -23,8 +25,7 @@ public class ReviewController {
     private final FeedService feedService;
 
     @PostMapping
-    public Review create(@RequestBody Review review) {
-        validate(review);
+    public Review create(@Valid @RequestBody Review review) {
         reviewService.create(review);
         feedService.create(Feed.builder()
                 .eventType(EventType.REVIEW)
@@ -39,8 +40,7 @@ public class ReviewController {
     }
 
     @PutMapping
-    public Review update(@RequestBody Review review) {
-        validate(review);
+    public Review update(@Valid @RequestBody Review review) {
         review = reviewService.update(review);
         feedService.create(Feed.builder()
                 .eventType(EventType.REVIEW)
@@ -103,33 +103,5 @@ public class ReviewController {
     public void removeDislikeFromReview(@PathVariable int id,
                                      @PathVariable int userId) {
         reviewService.getReviewStorage().removeLikeDislikeToReview(id, userId, false);
-    }
-
-    private void validate(Review review) {
-        String msg;
-
-        if (review.getContent() == null || review.getContent().isBlank()) {
-            msg = "Содержание отзыва не может быть пустым.";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
-
-        if (review.getUserId() == 0) {
-            msg = "Id пользователя не может быть равен нулю.";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
-
-        if (review.getFilmId() == 0) {
-            msg = "Id фильма не может быть равен нулю.";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
-
-        if (review.getIsPositive() == null) {
-            msg = "Полезность отзыва должна быть проинициализирована.";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
     }
 }
