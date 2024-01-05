@@ -4,9 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.service.FeedService;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
+import java.time.Instant;
 import java.util.List;
 
 @Slf4j
@@ -15,11 +20,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
+    private final FeedService feedService;
 
     @PostMapping
     public Review create(@RequestBody Review review) {
         validate(review);
         reviewService.create(review);
+        feedService.create(Feed.builder()
+                .eventType(EventType.REVIEW)
+                .operation(Operation.ADD)
+                .timestamp(Instant.now().toEpochMilli())
+                .userId(review.getUserId())
+                .entityId(review.getReviewId())
+                .build());
 
         log.info("отзыв с id={} добавлен", review.getReviewId());
         return review;
@@ -28,13 +41,29 @@ public class ReviewController {
     @PutMapping
     public Review update(@RequestBody Review review) {
         validate(review);
+        review = reviewService.update(review);
+        feedService.create(Feed.builder()
+                .eventType(EventType.REVIEW)
+                .operation(Operation.UPDATE)
+                .timestamp(Instant.now().toEpochMilli())
+                .userId(review.getUserId())
+                .entityId(review.getReviewId())
+                .build());
 
-        return reviewService.update(review);
+        return review;
     }
 
     @DeleteMapping("/{id}")
     public void deleteReviewById(@PathVariable int id) {
+        int userId = reviewService.getReviewStorage().getReviewById(id).getUserId();
         reviewService.getReviewStorage().deleteReviewById(id);
+        feedService.create(Feed.builder()
+                .eventType(EventType.REVIEW)
+                .operation(Operation.REMOVE)
+                .timestamp(Instant.now().toEpochMilli())
+                .userId(userId)
+                .entityId(id)
+                .build());
     }
 
     @GetMapping("/{id}")
