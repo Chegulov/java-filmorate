@@ -13,10 +13,7 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,12 +46,12 @@ public class FilmService {
         userStorage.getUserById(userId);
         filmStorage.addLike(userId, id);
         feedService.create(Feed.builder()
-                        .eventType(EventType.LIKE)
-                        .operation(Operation.ADD)
-                        .timestamp(Instant.now().toEpochMilli())
-                        .userId(userId)
-                        .entityId(id)
-                        .build());
+                .eventType(EventType.LIKE)
+                .operation(Operation.ADD)
+                .timestamp(Instant.now().toEpochMilli())
+                .userId(userId)
+                .entityId(id)
+                .build());
 
         return filmStorage.getFilmById(id);
     }
@@ -130,7 +127,7 @@ public class FilmService {
         if (sort.equals("year")) {
             return filmStorage.getFilms().stream()
                     .filter(f -> f.getDirectors().contains(director))
-                    .sorted((o1, o2) -> o1.getReleaseDate().compareTo(o2.getReleaseDate()))
+                    .sorted(Comparator.comparing(Film::getReleaseDate))
                     .collect(Collectors.toList());
         } else if (sort.equals("likes")) {
             return filmStorage.getFilms().stream()
@@ -172,5 +169,9 @@ public class FilmService {
         return searchedFilms.stream()
                 .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
                 .collect(Collectors.toList());
+    }
+
+    public List<Film> getRecommendation(int id) {
+        return filmStorage.getRecommendationFilmForUser(id);
     }
 }

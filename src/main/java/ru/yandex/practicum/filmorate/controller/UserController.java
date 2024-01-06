@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FeedService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
@@ -14,17 +16,14 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
     private final FeedService feedService;
+    private final FilmService filmService;
 
-    @Autowired
-    public UserController(UserService userService, FeedService feedService) {
-        this.userService = userService;
-        this.feedService = feedService;
-    }
 
     @GetMapping
     public List<User> getUsers() {
@@ -81,6 +80,12 @@ public class UserController {
     @GetMapping ("/{id}/feed")
     public List<Feed> getFeed(@PathVariable int id) {
         return feedService.getFeed(id);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> getRecommendationsForUser(@PathVariable int id) {
+        return filmService.getRecommendation(id);
+
     }
 
     private void validate(User user) {
