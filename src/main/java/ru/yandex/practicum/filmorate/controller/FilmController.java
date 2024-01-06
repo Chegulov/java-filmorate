@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+
 @Slf4j
 @Validated
 @RestController
@@ -60,8 +61,8 @@ public class FilmController {
 
     @GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count,
-                                      @RequestParam (defaultValue = "0") int genreId,
-                                      @RequestParam (defaultValue = "0") int year) {
+                                      @RequestParam(defaultValue = "0") int genreId,
+                                      @RequestParam(defaultValue = "0") int year) {
         return filmService.getPopularFilms(count, genreId, year);
     }
 

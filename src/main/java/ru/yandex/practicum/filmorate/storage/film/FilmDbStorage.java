@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,14 +22,9 @@ import java.util.TreeSet;
 
 @Slf4j
 @Component
-@Qualifier("filmDbStorage")
+@RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<Film> getFilms() {
@@ -147,6 +141,22 @@ public class FilmDbStorage implements FilmStorage {
             log.info("Фильм с id {} удален", filmId);
         }
 
+    }
+
+    public List<Film> getRecommendationFilmForUser(int id) {
+        String sqlQuery = "SELECT F.FILM_ID, NAME, DESCRIPTION, RELEASE_DATE, DURATION, " +
+                "M.MPA_ID, MPA_NAME " +
+                "FROM LIKES L " +
+                "JOIN FILMS F on F.FILM_ID = L.FILM_ID " +
+                "JOIN MPA M on M.MPA_ID = F.MPA_ID " +
+                "LEFT JOIN (SELECT FILM_ID FROM LIKES WHERE USER_ID = ?) L11 ON L11.FILM_ID = L.FILM_ID " +
+                "WHERE L.USER_ID = (SELECT L2.USER_ID FROM LIKES L1 " +
+                "INNER JOIN LIKES L2 ON L1.USER_ID != L2.USER_ID " +
+                "WHERE L1.USER_ID = ? " +
+                "GROUP BY L2.USER_ID " +
+                "ORDER BY COUNT(*) DESC LIMIT 1) " +
+                "AND L11.FILM_ID IS NULL ";
+        return jdbcTemplate.query(sqlQuery, this::makeFilm, id, id);
     }
 
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
