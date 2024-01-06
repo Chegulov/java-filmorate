@@ -16,7 +16,9 @@ public class Review {
     private String content;
     @NotNull
     private Boolean isPositive;
+    @NotNull
     private Integer userId;
+    @NotNull
     private Integer filmId;
     private final Map<Integer, Boolean> reviewsLikes = new HashMap<>();
 
