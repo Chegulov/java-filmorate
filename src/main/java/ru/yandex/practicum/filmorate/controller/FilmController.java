@@ -1,17 +1,18 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Optional;
 
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/films")
 public class FilmController {
@@ -27,8 +28,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@RequestBody Film film) {
-        validate(film);
+    public Film create(@Valid @RequestBody Film film) {
         filmService.getFilmStorage().create(film);
 
         log.info("фильм с id={} добавлен", film.getId());
@@ -36,8 +36,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@RequestBody Film film) {
-        validate(film);
+    public Film update(@Valid @RequestBody Film film) {
         filmService.getFilmStorage().update(film);
 
         return film;
@@ -49,12 +48,14 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film addLike(@PathVariable int id, @PathVariable int userId) {
+    public Film addLike(@PathVariable int id,
+                        @PathVariable int userId) {
         return filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film removeLike(@PathVariable int id, @PathVariable int userId) {
+    public Film removeLike(@PathVariable int id,
+                           @PathVariable int userId) {
         return filmService.removeLike(id, userId);
     }
 
@@ -71,11 +72,12 @@ public class FilmController {
         return filmService.getSortedFilmByDirector(directorId, sortBy);
     }
 
+    @Valid
     @GetMapping("/search")
     public List<Film> searchFilms(@RequestParam String query,
-                                  @RequestParam Optional<List<String>> by) {
+                                  @RequestParam @NotNull List<String> by) {
         log.info("Request received: GET /films/search");
-        List<Film> searchedFilms = filmService.getSearcherFilms(query, by.get());
+        List<Film> searchedFilms = filmService.getSearcherFilms(query, by);
         log.info("Request GET /films/search processed: searchedFilms: {}", searchedFilms);
         return searchedFilms;
     }
@@ -86,32 +88,8 @@ public class FilmController {
     }
 
     @GetMapping("/common")
-    public List<Film> getFilmByCommonUserAndFriend(@RequestParam int userId, @RequestParam int friendId) {
+    public List<Film> getFilmByCommonUserAndFriend(@RequestParam int userId,
+                                                   @RequestParam int friendId) {
         return filmService.commonFilms(userId, friendId);
-
-    }
-
-    private void validate(Film film) {
-        String msg;
-        if (film.getName() == null || film.getName().isBlank()) {
-            msg = "Имя фильма не может быть пустым.";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
-        if (film.getDescription().length() > 200) {
-            msg = "Длинна описания не должна превышать 200 символов.";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            msg = "Дата релиза не может быть раньше чем 28.12.1895.";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
-        if (film.getDuration() <= 0) {
-            msg = "Продолжительность фильма должна быть положительной";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
     }
 }

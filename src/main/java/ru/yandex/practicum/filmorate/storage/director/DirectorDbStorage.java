@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.sql.PreparedStatement;
@@ -32,21 +31,15 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Director create(Director director) {
-
-        if (director.getName().isBlank()) {
-            throw new ValidationException("Имя режиссёра  не может быть пустым");
-        } else {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(connection -> {
-                PreparedStatement stmt = connection.prepareStatement("INSERT INTO DIRECTORS(DIRECTOR_NAME) VALUES ( ?)",
-                        new String[]{"DIRECTOR_ID"});
-                stmt.setString(1, director.getName());
-                return stmt;
-            }, keyHolder);
-            director.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
-            return director;
-        }
-
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement stmt = connection.prepareStatement("INSERT INTO DIRECTORS(DIRECTOR_NAME) VALUES ( ?)",
+                    new String[]{"DIRECTOR_ID"});
+            stmt.setString(1, director.getName());
+            return stmt;
+        }, keyHolder);
+        director.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+        return director;
     }
 
     @Override

@@ -2,7 +2,12 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.validation.MinimumDate;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,12 +21,18 @@ import java.util.stream.Collectors;
 @Builder
 public class Film {
     private int id;
+    @NotBlank
     private String name;
+    @Size(max = 200)
     private String description;
+    @NotNull
+    @MinimumDate
     private LocalDate releaseDate;
-    private int duration;
+    @Min(1)
+    private Integer duration;
     private final Set<Integer> likes = new HashSet<>();
     private final TreeSet<Genre> genres = new TreeSet<>();
+    @NotNull
     private Mpa mpa;
     private final TreeSet<Director> directors = new TreeSet<>();
 

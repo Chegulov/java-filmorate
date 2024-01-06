@@ -36,6 +36,9 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User create(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         int userId = addUserToDb(user);
         user.setId(userId);
         String sqlQuery = "INSERT into relationship (user_id, friend_id) VALUES (?, ?)";
@@ -49,6 +52,9 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         if (!dbContainsUser(user.getId())) {
             String msg = String.format("Пользователь с id=%d не найден", user.getId());
             log.info(msg);
