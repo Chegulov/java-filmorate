@@ -28,12 +28,12 @@ public class UserController {
 
     @GetMapping
     public List<User> getUsers() {
-        return userService.getUserStorage().getUsers();
+        return userService.getUsers();
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        userService.getUserStorage().create(user);
+        userService.create(user);
 
         log.info("Пользователь с id={} добавлен", user.getId());
         return user;
@@ -41,7 +41,7 @@ public class UserController {
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        userService.getUserStorage().update(user);
+        userService.update(user);
 
         return user;
     }
@@ -58,7 +58,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void deleteFriend(@PathVariable int id) {
-        userService.getUserStorage().deleteUserById(id);
+        userService.deleteUserById(id);
     }
 
     @GetMapping("/{id}/friends")
@@ -73,7 +73,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
-        return userService.getUserStorage().getUserById(id);
+        return userService.getUserById(id);
     }
 
     @GetMapping ("/{id}/feed")

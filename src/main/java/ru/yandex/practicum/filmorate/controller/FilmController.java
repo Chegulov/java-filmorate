@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,22 +15,19 @@ import java.util.List;
 @Slf4j
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
 
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
-
     @GetMapping
     public List<Film> getFilms() {
-        return filmService.getFilmStorage().getFilms();
+        return filmService.getFilms();
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        filmService.getFilmStorage().create(film);
+        filmService.create(film);
 
         log.info("фильм с id={} добавлен", film.getId());
         return film;
@@ -37,14 +35,14 @@ public class FilmController {
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        filmService.getFilmStorage().update(film);
+        filmService.update(film);
 
         return film;
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable int id) {
-        return filmService.getFilmStorage().getFilmById(id);
+        return filmService.getFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -76,15 +74,15 @@ public class FilmController {
     @GetMapping("/search")
     public List<Film> searchFilms(@RequestParam String query,
                                   @RequestParam @NotNull List<String> by) {
-        log.info("Request received: GET /films/search");
+        log.debug("Request received: GET /films/search");
         List<Film> searchedFilms = filmService.getSearcherFilms(query, by);
-        log.info("Request GET /films/search processed: searchedFilms: {}", searchedFilms);
+        log.debug("Request GET /films/search processed: searchedFilms: {}", searchedFilms);
         return searchedFilms;
     }
 
     @DeleteMapping("/{id}")
     public void deleteFilmById(@PathVariable int id) {
-        filmService.getFilmStorage().deleteFilmById(id);
+        filmService.deleteFilmById(id);
     }
 
     @GetMapping("/common")

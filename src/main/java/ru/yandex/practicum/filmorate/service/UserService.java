@@ -73,4 +73,24 @@ public class UserService {
                 .map(userStorage::getUserById)
                 .collect(Collectors.toList());
     }
+
+    public List<User> getUsers() {
+        return userStorage.getUsers();
+    }
+
+    public User create(User user) {
+        return userStorage.create(user);
+    }
+
+    public User update(User user) {
+        return userStorage.update(user);
+    }
+
+    public void deleteUserById(int id) {
+        userStorage.deleteUserById(id);
+    }
+
+    public User getUserById(int id) {
+        return userStorage.getUserById(id);
+    }
 }

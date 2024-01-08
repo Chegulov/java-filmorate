@@ -13,7 +13,12 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Instant;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -173,5 +178,25 @@ public class FilmService {
 
     public List<Film> getRecommendation(int id) {
         return filmStorage.getRecommendationFilmForUser(id);
+    }
+
+    public List<Film> getFilms() {
+        return filmStorage.getFilms();
+    }
+
+    public Film create(Film film) {
+        return filmStorage.create(film);
+    }
+
+    public Film update(Film film) {
+        return filmStorage.update(film);
+    }
+
+    public Film getFilmById(int id) {
+        return filmStorage.getFilmById(id);
+    }
+
+    public void deleteFilmById(int id) {
+        filmStorage.deleteFilmById(id);
     }
 }
