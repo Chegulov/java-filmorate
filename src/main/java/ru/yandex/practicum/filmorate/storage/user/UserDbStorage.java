@@ -36,6 +36,9 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User create(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         int userId = addUserToDb(user);
         user.setId(userId);
         String sqlQuery = "INSERT into relationship (user_id, friend_id) VALUES (?, ?)";
@@ -49,6 +52,9 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         if (!dbContainsUser(user.getId())) {
             String msg = String.format("Пользователь с id=%d не найден", user.getId());
             log.info(msg);
@@ -127,11 +133,6 @@ public class UserDbStorage implements UserStorage {
             log.info(msg);
             throw new DataNotFoundException(msg);
         }
-        if (!dbContainsUser(friendId)) {
-            String msg = String.format("Пользователь с id=%d не найден", friendId);
-            log.info(msg);
-            throw new DataNotFoundException(msg);
-        }
         String sqlQuery = "DELETE FROM relationship where user_id=? AND friend_id=?";
         if (jdbcTemplate.update(sqlQuery, userId, friendId) == 0) {
             String msg = String.format("Пользователя с id=%d нет в друзьях у пользователя с id=%d", friendId, userId);
@@ -150,6 +151,17 @@ public class UserDbStorage implements UserStorage {
 
         String sqlQuery = "SELECT friend_id FROM relationship WHERE user_id=?";
         return jdbcTemplate.query(sqlQuery, (rs1, rowNum1) -> rs1.getInt("friend_id"), id);
+    }
+
+    @Override
+    public void deleteUserById(int userId) {
+        if (!dbContainsUser(userId)) {
+            throw new DataNotFoundException(String.format("Пользователь с id = %d не найден", userId));
+        } else {
+            jdbcTemplate.update("DELETE  FROM USERS   WHERE USER_ID = ?", userId);
+            log.info("Пользователь с id {} удален", userId);
+        }
+
     }
 
     private User makeUser(ResultSet rs, int rowNum) throws SQLException {

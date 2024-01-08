@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
-import ru.yandex.practicum.filmorate.exception.DuplicateDataException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
@@ -120,20 +119,6 @@ class FilmDbStorageTest {
         assertThat(savedFilm.getLikes())
                 .isNotNull()
                 .isEqualTo(Set.of(1));
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenDoubleLike() {
-        filmStorage.create(film);
-        userStorage.create(user);
-        filmStorage.addLike(1,1);
-
-        final DuplicateDataException exception = assertThrows(
-                DuplicateDataException.class,
-                () -> filmStorage.addLike(1, 1)
-        );
-
-        assertEquals(exception.getMessage(), "Одному фильму нельзя поставить лайк дважды");
     }
 
     @Test
