@@ -1,45 +1,47 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FeedService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.time.LocalDate;
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
+@Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
+    private final FeedService feedService;
+    private final FilmService filmService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping
     public List<User> getUsers() {
-        return userService.getUserStorage().getUsers();
+        return userService.getUsers();
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        validate(user);
-        userService.getUserStorage().create(user);
+    public User create(@Valid @RequestBody User user) {
+        userService.create(user);
 
         log.info("Пользователь с id={} добавлен", user.getId());
         return user;
     }
 
     @PutMapping
-    public User update(@RequestBody User user) {
-        validate(user);
-        userService.getUserStorage().update(user);
+    public User update(@Valid @RequestBody User user) {
+        userService.update(user);
 
         return user;
     }
@@ -54,6 +56,11 @@ public class UserController {
         return userService.deleteFriend(id, friendId);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteFriend(@PathVariable int id) {
+        userService.deleteUserById(id);
+    }
+
     @GetMapping("/{id}/friends")
     public List<User> getFriendsList(@PathVariable int id) {
         return userService.getFriendsList(id);
@@ -66,34 +73,17 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
-        return userService.getUserStorage().getUserById(id);
+        return userService.getUserById(id);
     }
 
-    private void validate(User user) {
-        String msg;
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            msg = "Почта не может быть пустой";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
-        if (!user.getEmail().contains("@")) {
-            msg = "Почта должна содержать \"@\"";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
-        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            msg = "Логин не может быть пустым и содержать пробелы";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            log.info("В качестве имени выбран логин {}", user.getLogin());
-            user.setName(user.getLogin());
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            msg = "Дата рождения не может быть в будущем.";
-            log.error(msg);
-            throw new ValidationException(msg);
-        }
+    @GetMapping ("/{id}/feed")
+    public List<Feed> getFeed(@PathVariable int id) {
+        return feedService.getFeed(id);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> getRecommendationsForUser(@PathVariable int id) {
+        return filmService.getRecommendation(id);
+
     }
 }
